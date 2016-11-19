@@ -1,0 +1,269 @@
+
+
+JSP全名为Java Server Pages,Java服务器端页面，其根本是一个简化的Servlet设计
+，它实现了在Java中使用HTML标签。Jsp是一种动态网页技术标准，同时也是javaee的标准，是在服务器端执行的
+
+
+JSP页面元素构成:
+指令，表达式，小脚本，声明，注释，静态内容
+三大指令：page，include，taglib；
+page指令（通常位于JSP页面的顶端，同一个页面可以有多个page指令）
+include指令（将一个外部文件嵌入当前的jsp页面，同时解析这个页面中的JSP语句）
+taglib指令（使用标签库定义新的自定义标签，在jsp页面中启用定制行为）
+page命令常用三个属性：language，import，contentType
+
+html注释<!-- -->客户端可见
+jsp注释 <%-- --%> 客户端不可见
+jsp脚本注释 // /* */ 客户端不可见
+
+JSP 页面 组成部分， 静态内容 ＋ 指令 ＋ 表达式 ＋ 小脚本 ＋ 声明 ＋ 注释。
+JSP 注释，采用 HTML 注释 ，在浏览器端审查元素是可以查出来的，所以呢尽量使用 JSP 或 JAVA 注释
+JSP声明        <%! java代码%>  在JSP页面定义变量或方法
+JSP脚本        <% java 代码 %>  JSP页面中执行的java代码
+JSP表达式    <% = 表达式 %> 在JSP页面执行的表达式
+写在<%! %>之内的内容，用于声明在代码区域用到的变量
+
+
+JSP页面的生命周期是用户发出对jsp页面的访问，如果是第一次访问，jsp引擎就会将jsp文件生成为一个servlet,生成字节码文件执行jspInit（），
+注意这个方法只在生成字节码文件时会被使用，即在一个生命周期中只执行一次，然后对于不是第一次访问jsp页面时，直接返回字节码文件
+
+JSP 的生命周期，典型的 java 场景，有着 JAVA 的优缺点，
+优点：高并发，安全
+缺点： 耗资源，
+
+
+
+小脚本:<% java代码 %><br>
+表达式:<%= 表达式 %><br>
+指令:<%@ 指令 %>
+声明:<%! java声明 %> 声明的字符串和函数等在表达式可以直接调用。<br><br>
+SimpleDateFormat函数显示日期 要<%@page import="java.text.*";%> 格式如下<br><br>
+<%<br><br>
+SimpleDateFormat sdf=new SimpleDateFormat(yyyy年MM月dd日);<br><br>
+String s = sdf.format(new Date());<br><br>
+%><br><br>
+<br><br>
+输出 ：今天是<%=s %>
+
+什么是内置对象 内置对象是web容器创建的一组对象，不使用new关键字就可以使用的内置对象
+
+常用的jsp内置对象:out、request、response、session、application、
+JSP有9大内置对象 除了上面的还有 page pageContent exception conflg
+
+web程序的请求响应模式
+用户发送请求
+服务器给用户响应
+
+缓冲区
+：Buffer ，所谓缓冲区就是内存的一块区域用来保存临时数据
+out对象 ：
+out对象是JspWriter类的实例，是向客服端输出内容常用的对象
+
+1.void print()向客户端打印字符串
+2.void clear() 清除缓冲区内容。在flash后调用会抛出异常
+3，void clearBuffer()清除缓冲区内容。在flash后调用不会抛出异常
+4，void flash()将缓冲区内容输出到客户端
+5，int getBufferedsize() 返回缓冲区以字节的大小，如果不设缓冲区，则0
+6. int getRemaining() 返回缓冲区还剩余多少可用
+7，boolean isAutoFlash()返回缓冲区满时，是自动清空还是抛出异常
+8，void close() 关闭输出流
+
+method是提交方式
+表单有两种提交方式：get与post。定义在<form action="dologin.jsp" name="loginForm" method="提交方式***"></form> 动作／名称等顺序无所谓。
+1.get：以【明文】方式，通过URL提交数据，数据在URL中【可以看到】。提交数据最多不超过【2KB】。安全性较低，但效率比post方式高。适合提交数据量不大，
+且安全要求不高的数据：比如：搜索、查询等功能。
+2.post：将用户提交的信息封装在HTML Header内。适合提交数据量大，安全性高的用户信息。如：注册、修改、上传等功能。
+ 
+
+
+
+Request 对象用于接收客户端浏览器提交的数据，而 Response 对象的功能则是将服务器端的数据发送到客户端浏览器。
+
+
+
+
+JSP内置对象——request对象（上）
+一、request对象
+Request对象的作用是与客户端交互，收集客户端的Form、Cookies、超链接，或者收集服务器端的环境变量。
+1、request用于封装客户端的请求信息。
+2、它是HttpServletRequest类的实例。
+3、request对象具有请求域，即完成客户端的请求之前，该对象一直有效。
+
+Request对象里面包含了所有你访问时发起的请求的所有参数，Response对象则包含了你请求之后服务器给你的所有的响应信息。
+通过这两个参数你可以获得很多HTTP访问中的参数信息
+
+三、解决url传中文参数出现乱码问题:
+tomcat > conf> server.xml
+<Connector port="8080" protocol="HTTP/1.1"
+connectionTimeout="20000"
+redirectPort="8443" 【URIEncoding="utf-8"】添加这一句，修改服务器编码方式
+因为提交表单的时候，提交的字符集与本页面设置的字符集不一样，使用需要request设置字符集
+这是传参数的方式
+列子：<a href="xxx.jsp?username=lisi">测试</a>
+
+response对象包含了响应客户请求的有关信息，是HttpServletResponse类的实例。response对象具有页面作用域，即在一次访问中该页面的response只能对该访问有效，
+其他页面的response对象对当前页面无效。response,getWriter()返回一个printWriter对象，这个对象也可以象用户输出字符的一个对象，
+但它在jsp的内置对象out之前输出，要想out在printWriter对象前输出可以使用flush()清空缓存区强制输出。
+response 的sendRedirect("..jsp")可将这个response的页面跳转到你想要他跳转的页面。
+
+请求重定向：客户端行为，重定向实际发送两次请求，地址url会发生改变，前一次请求对象不会保存；
+请求转发：服务器行为，发送一次请求，地址url不会发生改变，前一次请求对象会保存下来
+
+JSP内置对象——session对象
+一、什么是session
+1、session表示客户端与服务器的一次会话
+2、Web中的session指：用户在浏览某个网站时，从进入网站到浏览器关闭所经过的这段时间，也就是用户浏览网站所花费的时间。
+3、从上述定义中可以看到，session实际是一个【特定的时间概念】
+4、服务器的内存中，保存着同用户的session。
+
+
+session
+1.表示访问浏览器的时间
+2.getCreationTime（）session创建时间
+3.getID获取ID号
+4.setAttribute getAttribute方法返回的是set中的值
+获取set设置的属性用getValueNames()
+5.设置访问会话的时间：setMaxInactiveInterval,单位为秒
+
+session的生命周期为：
+1.创建：当客户端第一次访问某个jsp或servlet时，服务器会为当前会话创建一个SessionId，每次客户端向服务端发送请求时，
+都会将此sessionID携带过去，服务端会对此SessionI的进行校验
+2.活动：某次会话中通过超链接打开的新页面仍属于同一次会话。只要当前会话页面没有全部关闭，重新打开新的浏览器访问同一项目的的资源时人数与同一次会话。
+除非将本次会话的所有页面都关闭后再重新访问某个jsp或者servlet将会创建新的会话。
+需要注意的是，原有会话仍存在，只是这个就得sessionId仍存在与服务器内存中，只不过在没有客户端携带它来交予服务器校验
+3.销毁：有三种方式：调用session.invalidate()方法，或者等session超时（过期），或者服务	器重新启动。
+
+测试只要当前会话页面没有全部关闭，重新打开新的浏览器窗口访问同一项目资源时，属于同一次会话
+
+application对象实现了用户间数据的共享，可存储全局变量。application开始于服务器的启动，
+终止于服务器的关闭，在用户的前后或不同用户之间的连接中，可以对application对象的同一属性进行操作，
+在任何地方对application对象属性的操作，都会影响到其他用户对此的访问。application对象是ServletContext类的实例。<br>
+注意application的setAttribute()函数中，第一个参数是字符串，第二个参数是要保存的对象。
+application 对象相当于全局变量，属于服务器，类似于 static 变量
+同样也有setAttribute  还有getAttribute两个方法
+
+
+
+page 对象 就是当前 JSP 页面的 this 指针,是 java.lang.Object 的实例
+
+JSP内置对象——pageContext对象
+一、pageContext对象
+1、pageContext对象提供了对JSP页面内【所有】的对象及名字空间的访问。【权限很高】
+2、可以访问到本页所在的session，也可以取本页面所在的application的某一属性值
+3、简单说，pageContext对象相当于页面中所有功能的集大成者
+4、pageContext对象的本类名也叫pageContext
+二、常用方法如下：forward("xxx.jsp")进行跳转，include("yyy.jsp");会在页面中包含yyy.jsp页面
+
+
+Config对象
+config对象是在一个Servlet初始化时，JSP引擎向它传递信息用的，
+此信息包括Servlet初始化时所要用到的参数（通过属性名和属性值构成）以及服务器的有关信息（通过传递一个ServletContext对象）
+
+
+Exception对象是一个异常对象，当一个页面在运行过程中发生了异常，就产生了这个对象，如果一个JSP页面要应用此对象，
+就必须把isErrorPage设为true，否则无法编译，他实际上是java.lang.Throwable的对象。
+注意在声明语句中将isErrorPage()设置为true才能打印出exception内容。同时在exception测试页面中要声明errorPage跳转到打印异常页面。
+
+
+javabean简介 
+javabeans就是符合某种特定的规范的java类。使用javabeans的好处是解决代码的重复编写，减少代码冗余，功能区分明确，提高了代码
+的维护性
+javabean的设计原则
+公有类
+无参的公有构造方法
+属性私有
+getter和setter方法
+
+
+JSP动作元素
+javabean - JSP动作元素  就是一段标签要遵从xml语法
+（1）JSP动作元素为请求处理阶段提供信息。
+（2）动作元素遵循XML元素的语法。有一个包含元素名的开始标签，可以有属性、可选内容，以及结束标签。
+------------------------------------
+JSP动作分为以下几类：
+（1）与存取JavaBean有关的6个元素。 如：
+<jsp:useBean> <jsp:setProperty> <jsp:getProperty>
+（2）6个动作元素。 如：
+<jsp:include> <jsp:forward> <jsp:param> <jsp:plugin> <jsp:params> <jsp:fallback>
+（3）与Document有关的6个元素：
+<jsp:root> <jsp:declaration> <jsp:scriptlet> <jsp:expression> <jsp:text> <jsp:output>
+（4）用来动态生成XML元素标签的3个动作：
+<jsp:attribute> <jsp:body> <jsp:element>
+（5）用在Tag File中的2个元素：
+
+jsp动作元素（action elements），动作元素为请求处理阶段提供信息。动作元素遵循xml元素的语法，
+有一个包含元素名的开始标签，可以有属性，可选的内容，与开始标签匹配的结束标签
+
+jsp页面使用javabean，一是按照普通类的方法，另一个是使用jsp标签（useBeans、setProperty、getProperty）
+
+useBean动作实例
+<jsp:useBean id="myUser" class="com.po.Users" scope="page"/>
+<h1>
+使用userBean动作创建JavaBean的实例
+
+<jsp:setProperty name="对象名" property="*"/>
+<jsp:setProperty name="对象名" property="具体属性名"/>
+<jsp:setProperty name="对象名" property="具体属性名" value="人工赋值"/>
+<jsp:setProperty name="对象名" property="具体属性名" param="url传值属性名"/>
+
+用getProperty获取指定属性的值
+<jsp:getProperty name="javabean实例名" property="属性名"></jsp:getProperty>
+
+
+javabean的四个作用域范围 - scope
+使用useBeans的scope属性可以用来指定javabean的作用范围：
+scope="page" 仅在当前页面有效（重定向或者服务器内部转发均后均无效）
+scope="request" 可用request.getAttribute()方法获得javabean对象。在当前请求及服务器转发后的请求中有效。
+scope="session" 可用session.getAttribute()方法获得javabean对象。在当前会话session有效期间，该对象均有效。
+scope="application" 可用application.getAttribute()方法获得javabean对象。范围最广
+-- 作用域范围从小到大依次为：page < request < session < application.
+
+
+Model1模型是使用JSP+javabeans模式。客户发送请求到JSP页面，由JSP页面直接连接数据库则可维护性和扩展性太差，
+因此通过JSP页面调用javabeans来访问数据库，则可以维护这个系统的扩展性，再由JSP页面返回给客户
+
+JSP状态管理
+
+保存用户状态的俩大机制
+Session
+Cookie
+Session与Cookie
+都可以保存用户信息
+session保存的是Object类型
+随会话的结束而将其存储的数据销毁
+保存重要的信息
+
+Cookie
+在客户端保存信息
+cookie保存的是String类型 
+cookie可以长期保存在客户端
+保存不重要的用户信息
+
+include指令
+语法
+<%@ include file="URL">
+include动作
+语法
+<jsp:include page="URL" flush="true|false"/>
+page 要包含的页面
+被包含的页面是从缓冲区读取
+
+include指令与include动作的比较
+语法 <%@ include file="URL"> <jsp:include page="URL" flush="true|false"/>
+发生作用时间     页面转换期间                              请求期间
+包含的内容        文件的实际内容                            页面的输出
+转换成的Servlet 主页面和包含页面转换
+                             为一个servlet        主页面和包含页面转换为独立的
+                             servlet
+ 编译时间           较慢---资源必须解析                 较快
+执行时间           稍快                                                    较慢--每次资源必须被解析
+ 
+ 
+ forward动作
+ 语法
+ <jsp:forward page="URL"/>
+ 等同于request.getRequestDispatcher("/url").forward(request.response);
+ param动作
+ 语法
+ <jsp:param name="参数名" value="参数值">
+ 常常与<jsp:forward>一起使用，使用其标签

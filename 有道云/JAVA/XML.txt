@@ -1,0 +1,194 @@
+DOM写入XML
+
+public void creatxml(){
+	 DocumentBuilder db= getDocument();
+	 Document document=db.newDocument();
+//	 setXmlStandalone是为了dtd和？？
+	 document.setXmlStandalone(true);
+	  Element bookStore= document.createElement("bookStore");
+//	    向bookstore根节点中添加子节点book
+	  Element book=document.createElement("book");
+       book.setAttribute("id", "1"); 
+       Element name=document.createElement("name");
+       Element author=document.createElement("author");
+       Element  year=document.createElement("year");
+       Element price=document.createElement("price");
+       author.setTextContent("不知道");
+       name.setTextContent("小王子");
+         year.setTextContent("2014");
+         price.setTextContent("68");
+       book.appendChild(name);
+       book.appendChild(author);
+       book.appendChild(year);
+       book.appendChild(price);
+	  //	  将book节点添加到bookstore根节点中
+	  bookStore.appendChild(book);
+//	  将bookStore节点（已经包含了book） 添加到dom树中
+	  document.appendChild(bookStore);
+	  
+	 TransformerFactory tff=TransformerFactory.newInstance();
+	 try {
+	   Transformer tf=  tff.newTransformer();	
+		tf.setOutputProperty(OutputKeys.INDENT, "yes");	
+		tf.transform(new DOMSource(document), new StreamResult(new File("books1.xml")));
+	} catch (TransformerConfigurationException e) {
+		e.printStackTrace();
+	} catch (TransformerException e) {
+		e.printStackTrace();
+	}
+	}
+
+工厂创建对象，准备工作  创建好DocumentBuilder
+然后new一个Document  （有一个这个setXmlStandalone方法，为的是dtd还有？？的规范？）   
+直接通过createElement这个方法写入
+DOM的体系体现的非常清楚
+
+
+
+
+SAX写入xml文件
+
+public void CreatXML() {
+		ArrayList<Book> booklist = parseXML();
+		// 生成xml
+		// 1，创建一个TransformerFactory类的对象
+		SAXTransformerFactory tff = (SAXTransformerFactory) SAXTransformerFactory.newInstance();
+		// 通过SAXTransformerFactory对象创建一个TransformerHandler对象
+		TransformerHandler handler = null;
+		try {
+			handler = tff.newTransformerHandler();
+		} catch (TransformerConfigurationException e) {
+			e.printStackTrace();
+		}
+		// 可以通过handler对象创建一个Transformer对象
+		Transformer tr = handler.getTransformer();
+		// 通过Transformer对象生成的xml文件进行设置
+		// 设置xml的编码
+		tr.setOutputProperty(OutputKeys.ENCODING, "UTF-8");
+		// 设置的xml的是否换行
+		tr.setOutputProperty(OutputKeys.INDENT, "yes");
+		// 创建result对象
+		File f = new File("src/res/newbooks.xml");
+		if (!f.exists()) {
+			try {
+				f.createNewFile();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+		// 创建result对象，并且使其与handler关联
+		Result result = new StreamResult(f);
+		// 利用handler对象进行xml文件的内容的编写
+		handler.setResult(result);
+		// 打开document
+		try {
+			handler.startDocument();
+			Attributes2Impl attr = new Attributes2Impl();
+			handler.startElement("", "", "bookstore", attr);
+			attr.clear();
+			for (Book book : booklist) {
+				attr.clear();
+				attr.addAttribute("", "", "id", "", book.getId());
+				handler.startElement("", "", "book", attr);
+				// 创建name节点
+				if (book.getName() != null && !book.getName().trim().equals("")) {
+					attr.clear();
+					handler.startElement("", "", "name", attr);
+//					characters方法是设置节点之中的文本的，attr为空
+					handler.characters(book.getName().toCharArray(), 0, book
+							.getName().length());
+					handler.endElement("", "", "name");
+				}
+				// 创建year节点
+				if (book.getYear() != null && !book.getYear().trim().equals("")) {
+					attr.clear();
+					handler.startElement("", "", "year", attr);
+					handler.characters(book.getYear().toCharArray(), 0, book
+							.getYear().length());
+					handler.endElement("", "", "year");
+				}
+				// 创建author节点
+				if (book.getAuthor() != null && !book.getAuthor().trim().equals("")) {
+					attr.clear();
+					handler.startElement("", "", "author", attr);
+					handler.characters(book.getAuthor().toCharArray(), 0, book
+							.getAuthor().length());
+					handler.endElement("", "", "author");
+				}
+				// 创建price节点
+				if (book.getPrice() != null && !book.getPrice().trim().equals("")) {
+					attr.clear();
+					handler.startElement("", "", "price", attr);
+					handler.characters(book.getPrice().toCharArray(), 0, book
+							.getPrice().length());
+					handler.endElement("", "", "price");
+				}
+				// 创建language节点
+				if (book.getLanguage() != null && !book.getLanguage().trim().equals("")) {
+					attr.clear();
+					handler.startElement("", "", "language", attr);
+					handler.characters(book.getLanguage().toCharArray(), 0, book
+							.getLanguage().length());
+					handler.endElement("", "", "language");
+				}
+				handler.endElement("", "", "book"); 
+			}
+			handler.endElement("", "", "bookstore");
+			// 关闭document
+			handler.endDocument();
+
+		} catch (SAXException e) {
+			e.printStackTrace();
+		}
+
+	
+JDOM先创建工厂
+然后创建了工厂对应的子类
+handler是TransformerHandler的对象
+然后设置格式
+然后就开始编写 主要是通过result这个类将创建与编写连接
+下面就到了handler具体实现的地方   开始  结束  SAX的架构体系
+
+Dom4j写入
+public  void creatxml(){
+//		创建document对象 代表xml文档
+		Document document=DocumentHelper.createDocument();
+//		2，创建根节点
+		 Element rss= document.addElement("rss");
+//	    3  向rss节点中添加文本这个属性
+		 rss.addAttribute("version", "2.0");		 
+//		4  生成文件
+		 File file=new File("rssnews.xml");
+//      5 生成子节点及节点内容
+		  Element channel= rss.addElement("channel");
+		 Element title= channel.addElement("title");
+		title.setText("国内最新新闻");
+//		设置格式
+         OutputFormat  format=OutputFormat.createPrettyPrint(); 
+	format.setEncoding("GBK");
+         //		  设置生成xml的格式 
+		
+		 try {
+			XMLWriter writer=new XMLWriter(new FileOutputStream(file),format);
+			writer.write(document);
+			writer.close();			
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();		
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		} 
+		 
+		
+	}
+
+
+document套用eleument
+document暂代文档模型
+
+
+
+
+
+如果instance变量是一个对象，如数组或ArrayList什么的，那上述方法仍然不安全，因为当外界对象通过get方法拿到这个instance对象的引用后，又将其指向另一个对象，那么这个private变量也就变了，岂不是很危险。 这个时候就需要将get方法也加上synchronized同步，并且，只返回这个private对象的clone()――这样，调用端得到的就是对象副本的引用

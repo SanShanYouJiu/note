@@ -1,0 +1,527 @@
+整型
+tinyint	1字节，范围（-128~127）
+smallint	2字节，范围（-32768~32767）
+mediumint	3字节，范围（-8388608~8388607）
+int	4字节，范围（-2147483648~2147483647）
+bigint	8字节，范围（+-9.22*10的18次方）
+浮点型
+MySQL数据类型	含义
+float(m, d)	4字节，单精度浮点型，m总个数，d小数位
+double(m, d)	8字节，双精度浮点型，m总个数，d小数位
+decimal(m, d)	decimal是存储为字符串的浮点数
+
+字符串数据类型
+MySQL数据类型	含义
+char(n)	固定长度，最多255个字符
+varchar(n)	可变长度，最多65535个字符
+tinytext	可变长度，最多255个字符
+text	可变长度，最多65535个字符
+mediumtext	可变长度，最多2的24次方-1个字符
+longtext	可变长度，最多2的32次方-1个字符字符串数据类型
+MySQL数据类型	含义
+char(n)	固定长度，最多255个字符
+varchar(n)	可变长度，最多65535个字符
+tinytext	可变长度，最多255个字符
+text	可变长度，最多65535个字符
+mediumtext	可变长度，最多2的24次方-1个字符
+longtext	可变长度，最多2的32次方-1个字符
+
+
+
+二进制数据(_Blob)
+1._BLOB和_text存储方式不同，_TEXT以文本方式存储，英文存储区分大小写，而_Blob是以二进制方式存储，不分大小写。 
+2._BLOB存储的数据只能整体读出。 
+3._TEXT可以指定字符集，_BLO不用指定字符集。
+
+
+
+日期时间类型
+MySQL数据类型	含义
+date	日期 '2008-12-2'
+time	 时间 '12:25:36'
+datetime	日期时间 '2008-12-2 22:06:44'
+timestamp	自动存储记录修改时间
+
+
+
+约束
+1）子表是具有外键列的表，我们称之为子表，子表和父表有继承关系。
+（2）子表参照的表我们称之为父表。
+（3）曾经加过FOREIGN KRY的列，我们称之为外键列。
+2.外键约束的要求：
+（1）父表和子表必须使用相同的存储引擎，而且禁止使用临时表。
+（2）数据表的存储引擎只能是InnoDB.
+（3）外键列参照的列就是参照列，两者必须具有相似的数据类型，
+如何理解？就是其中的数字的长度或者是否有符号位必须相同；而字符的长度则可以不同。
+（4）外键列和参照列必须创建索引，如果外键列不存在索引的话，
+MySQL不会自动创建索引，如果外键列有索引而参照咧没有索引，则MySQL将自动创建索引。
+
+表级约束与列级约束
+对一个数据列建立的约束，称之为列级约束
+对多个数据了建立的约束，称之为表级约束
+列级约束既可以在列定义时声明，也可以在列定义后声明
+表级约束
+
+列模式：
+create table temp(
+    /*主键约束*/
+    id int primary key,
+    name varchar(25)
+);
+ 
+create table temp2(
+    id int not null,
+    name varchar(25),
+    pwd varchar(15),
+    constraint pk_temp_id primary key(id)
+);
+
+表级
+create table temp (
+        id int not null,
+        name varchar(25),
+        password varchar(16),
+        --使用表级约束语法，
+        constraint uk_name_pwd unique(name, password)
+);
+
+
+
+
+
+GROUP BY
+查询结果分组：SELECT col_name FROM table_name GROUP BY {col_name|position}
+
+HAVING
+SELECT ..FROM table..HAVING 条件 按照条件查询
+
+LIMIT 
+限制查询结果 ：LIMIT [offset] row_count|row_count OFFSET offset;
+例：SELECT *FROM table_name LIMIT 2,3; 查询从第3行开始往后3行
+
+
+ORDER BY
+查询排序：ORDER BY {col_name|expression|position} [ASC(升序)|DESC（降序）]
+
+
+添加字段： ALTER TABLE table_name ADD column_name datatype;
+更改字段数据类型：ALTER TABLE table_name MODIFY column_name dataype;
+删除字段： ALTER TABLE table_name DROP column column_name;
+修改字段名： ALTER TABLE table_name change COLUMN column_name  new_column_name;
+修改表名： RENAME table  table_name TO new_table_name;
+
+
+
+
+
+
+
+外键约束
+FOREIGN KEY(自身的对象) 参照的表 （参照的表的对象） 
+
+CASCADE:删除或更新父表中的数据相应的删除或更新子表中的相匹配的行；
+SHOW CREATE TABLE tb_name;//显示数据表创建时的命令；
+创建子表：users1;
+>CREATE TABLE users(
+>id SMALLINT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
+>username VARCHAR(10) NOT NULL,
+>pid(外键) SMALLINT(与参照键类型相同) UNSIGNED(与参照键有无符号类型也要相同),
+//外键的作用体现在这：如果我们要添加一个省份的字段，需要添加个char型的，现在有了关系型数据库，
+我们只需要存储省份的id即可；
+>FOREIGN KEY (pid) PREFERENCES provinces (id) ON DELETE CASCADE,
+>);
+INSERT provinces(pname) VALUES('A');
+INSERT provinces(pname) VALUES('B');
+INSERT provinces(pname) VALUES('C');
+INSERT users1(username,pid) VALUES('Tom',1);
+INSERT users1(username,pid) VALUES('Jerry',2);
+INSERT users1(username,pid) VALUES('Lucy',3);
+当删除provinces中的id=3的数据C时，相应的users1中的Lucy也会被删掉，更新的话同样如此；
+
+
+SET NULL://从父表删除或更新行，会设置子表中的外键列为NULL，如果使用该选项，必须保证子表列没有指定NOT NULL
+
+RESTRICT://拒绝对父表的删除或更新操作；
+NO ACTION：//标准的SQL语句，在MYSQL当中与RESTRICT相同
+
+实际开发中，我们很少使用物理的外键约束，而是使用逻辑约束；无理的外键约束只有innoDB这种存储引擎才会支持，
+MYISAM这种引擎就不支持物理的外键约束。反过来说，当我们使用到的引擎为MYISAM时，
+只能使用逻辑外键（即两个表的设计的逻辑关系）。
+
+1、添加主键约束：
+ALTER TABLE tbl_name ADD [CONSTRAINT[symbol]] PRIMARY KEY[index_type] (col_name);
+2、添加唯一约束
+ALTER TABLE tbl_name ADD UNIQUE(col_name);
+3、添加外键约束
+ALTER TABLE tbl_name ADD [CONSTRAINT[symbol]] FOREIGN KEY [index_type](外键列) REFERENCES 父类（参考列）;
+4、添加/删除默认DEFAULT约束
+ALTER TABLE tbl_name ALTER col_name SET literal / DROP DEFAULT;	
+5、查看索引：SHOW INDEXES FROM 表名;
+
+1、删除主键约束：ALTER TABLE 表名 DROP PRIMARY KEY;
+2、删除唯一约束：ALTER TABLE 表名 DROP {INDEX|KEY} 约束所在字段;
+3、删除外键约束：ALTER TABLE 表名 DROP FOREIGN KEY 外键索引名字;
+4、查看外键约束名称：SHOW CREATE TABLE 表名;
+ AUTO_INCREMENT  自动编号的语句
+ALTER TABLE `mydatabase`.`mytable `
+ MODIFY COLUMN `id` INTEGER UNSIGNED NOT NULL  AUTO_INCREMENT;添加自动编号的语句
+
+
+
+
+
+
+
+
+
+
+AVG SUM MIX MIN ..都是聚合函数
+SELECT AVG(col) FROM tab--columns
+。。。。。。。。。。。。类似
+SELECT ROUND(AVG(col,[小数位]))FROM tab-columns
+ROUND是四舍五入函数
+ANY.SOME ALL 修饰的比较运算符 
+列如：select * from test2 where id> any (select a from  test);
+NOT IN与！=ALL或<>ALL运符等价
+列如：
+ select * from test2 where id   not 
+in (select a from  test);
+
+[NOT] EXISTS 如果子查询返回任意行，EXISTS将返回TRUE,否则为false
+使用外键或者码表的作用在于：
+1：节省存储空间，提高查询效率
+2：便于维护部分显示的信息
+INSERT ..VALUE..
+INSERT ..SET....是可以用于子查询的
+插入查找到的信息  
+INSERT tav_columns(col1) SELECT col2 FROM  tab_colmns GROUP BY col2; 
+INNER JOIN 内连接
+在mysql中，JOIN,CROSS JOIN和INNER JOIN是等价的
+LEFT [OUTER] JOIN ,左外连接
+RIGHT [OUTER] JOIN,右外连接
+UPDATE tab-columns1 INNER JOIN tab_columns ON col1 = col2
+SET col3 = col4;
+列如： update mytable left join test2 on mytable.id=test2.id set mytable.id=4 ,test2.id=4 where mytable.id=1;
+可以对表对其别名
+外连接分为左外连接和右外连接。左外连接显示左表全部记录以及与右表符合连接条件的记录。右外连接同理
+多表的连接跟两张表的连接一样
+
+外链接 A LEFT JOIN B join_condition<br>
+数据表B的结果集依赖数据表A。
+数据表A的结果集根据左连接条件依赖于所有数据表（B表除外）。
+左外连接条件决定如何检索数据表B（在没有指定WHERE条件的情况下）。
+如果数据表A的某条记录符合WHERE条件，但是在数据表B不存在符合连接条件的记录，将生成一个所有列为空的额外的B行。
+表的连接实质就是外键的逆向约束
+//多表连接就是用多个INNER JOIN 来实现
+
+例子：
+SELECT goods_id,goods_name,b.cate_name,c.brand_name,goods_price 
+FROM products AS a INNER JOIN products_cate AS b ON a.goods_cate = b.cate_id
+INNER JOIN products_brand AS c ON a.brand_name = c.brand_id;//俩次join
+连接对操作非常重要
+
+
+自身查找
+可以声明别名来进行
+如果在连接中查找的数据不存在，并且在WHERE子句中尝试以下操作：col_named IS NULL;
+如果col_name被定义为NOT NULL了，mysql将在找到符合连执着条件的记录后停止搜索更多的行
+
+
+无限分类的数据表设计，表中含有层级结构
+同一个数据表可以自身连接
+多表模拟单表删除的是用到了别名来模拟出俩个表来进行自己的条件对比删除
+
+
+
+
+
+
+
+
+
+MYSQL中的运算运算符与函数
+1 字符函数
+2 数值运算符与函数
+3 比较运算符与函数
+4 日期时间函数
+5 信息函数
+6 聚合函数
+7 加密函数
+
+CONCAT() 字符连接
+CONCAT_WS() 使用指定的分割符进行的字符连接 列如： select concat_ws("_","ce","ce","ces
+");
+FORMAT() 数字格式化 列如: select FORMAT(12.231,2
+);
+LOWER() 转化为小写字母
+UPPER() 转化为大写字母
+LEFT() 获取左侧字符
+RIGHT() 获取右侧字符
+LENGTH()获取字符串长度
+LTRIM()	
+LEDING 删除前导
+TRAILING 删除后导
+BOTH 删除全部
+REPLCE()替换字符串 列如: select replace("csc","cs","c");
+SUBSTRING() 字符串的截取 列如： select substring('mysql',-2,1);
+LIKE 查找字符串 
+ESCAPE 取消通配符 列如：SELECT * FROM test WHERE first_name LIKE '%1%%' ESCAPE 1;
+%代表的是任意的字符
+_代表的是任意一个字符
+
+CEIL() 向上取整
+FLOOR()是向下取整
+DIV 整数除法 列如：select 12 div 2;
+MOD 取余数 
+POWER() 幂运算
+ROUND() 四舍五入
+TRUNCATE() 数字截取
+
+[NOT]BETWEEN ..AND..[不]在范围内 列如： select * from user where userId between 5 and 7;
+[NOT] IN（）[不]在列出范围内
+IS [NOT] NULL [不]是否为空 
+
+NOW() 当前日期和时间
+CURDATE() 当前日期 
+CURTIME(）当前时间
+DATE_ADD() 日期的变化   DATA_ADD（（要变化的时间），INTERVAL 具体数字 单位）
+DATEDIFF() 时间的差值 列如： select datediff("2016-10-2",now());
+DATE_FORMAT() 日期的格式化
+
+CONNECTION_ID)连接ID
+DATABASE() 当前数据库
+LAST_INSERT_ID()最后插入记录的ID号
+USER() 当前用户
+VERSION()版本信息
+
+AVG()平均值
+COUNT()计数
+MAX() 最大值
+MIN() 最小值
+SUM() 求和
+
+MD5()信息摘要算法 尽量推荐使用MD5
+PASSWORD()密码算分  修改MYSQL客户端自身的密码
+
+内置函数库
+字符函数
+数值函数
+日期时间函数
+加密函数
+
+
+
+
+
+
+
+
+
+
+
+
+自定义函数（UDF）
+FUNCTION 自定义函数关键字
+用法与内置函数相同
+参数与返回值
+函数能返回任意类型的值
+同样可以接受这些类型的参数
+参数的数量不能超过1024个
+CREATE FUNCTION function_name
+RETURNS
+{STRING|INTEGER|REAL|DECIMAL}
+routine_body
+routine返回的类型
+函数体是合法的SQL语句构成
+函数体可以幼简单的SELECT或INSERT语句；
+函数体如果为复合结构则使用BEGIN...END语句；
+复合结构包含声明，循环，控制结构；
+DELIMITER 是改变分隔符的
+创建函数并返回它的ID 值：使用 DELIMITER // 修改结束符号
+CREATE FUNCTION adduser(username VARCHAR(20))
+RETURNS INT UNSIGNED
+BEGIN
+INSERT user(username) VALUES(username);
+RETURN LAST_INSERT_ID();
+END//
+1.函数需要具备两个条件：参数，返回值（参数可以为0或多个）
+2.函数返回值只能有一个;
+3.如果函数体有多个SQL语句，要用复合结构，即BEGIN ...END
+复合函数
+ DELIMITER //
+设置结束符
+CREATE FUNCTION adduser(username varchar(20))
+returns int unsigned
+begin
+insert test(username) values(username);
+return last_insert_id();
+end
+//
+
+http://www.cnblogs.com/zhangminghui/p/4113160.html 这里是关于自定义函数网站的地址
+
+
+
+
+
+
+
+存储过程
+
+是SQL语句和控制语句的预编译集合，以一个名称存储并作为一个单元处理
+存储过程关键字为PROCEDURE
+参数 输入类型 输出类型 输入&&输出
+CALL 为调用关键字
+ CALL sp_name([parameter[,...]])为带有参数的
+CALL sp_name[()]是无参数的 使用的时候可以无小括号P
+
+修改存储过程并不能修改过程体（和自定义函数一样）
+如果一定要修改过程体的话 那么需要先将这个存储过程删除
+
+IN ,表示该参数的值在调用存储过程时被指定
+OUT，表示该参数的值可以被存储过程改变，并且可以返回	
+INOUT，表示该参数的调用时被指定，并且可以被改变和返回
+过程体由合法的SQL语句构成
+过程体可以是‘任意’的SQL语句
+过程体如果为复合结构则使用 BEGIN...END语句
+复合结构可以包含声明，循环，控制结构
+DROP  PROCEDURE 存储过程名
+BEGIN EDN之间声明的变量是局部变量
+SET @U=7这样声明的变量称之为用户变量
+带@符号的是用户变量
+CONCAT()字符串参数连接
+ROW_COUNT()函数表示获取，增加、修改、删除的记录条数
+存储过程实现的功能要复杂一些 而函数的针对性更强
+存储过程可以返回多个值；函数只能有一个返回值
+存储过程一般是独立执行的：而函数可以作为其他SQL语句的组成部分来实现
+只能修改简单特性 要修改过程体只能删除来实现
+创建语法。。
+create procedure sp_name()
+begin
+.........
+end
+
+
+删除存储过程 :drop { procedure | function } [ if exists] sp_name
+
+
+
+
+
+存储引擎
+MYSQL可以将不同数据存储以不同技术存储在文件（内存）中这种技术就叫存储引擎
+每一种存储引擎都使用了不同的存储机制。索引技巧。锁定水平。最终提供广泛且不同的功能 
+MYSQL支持的存储引擎
+MyISAM
+InnoDB
+Memory
+CSV
+Archive
+
+并发处理
+并发控制--当多个连接对记录进行修改时保证数据的一致性与完整性
+通过锁控制
+共享锁（读锁） 同一个时间段内，多个用户可以读取同一个资源，读取过程中数据不会发生变化
+排他锁（写锁） 在任何时候只要一个用户才能修资源，当进行写锁时会阻塞其他的读锁或写锁操作
+加锁只加对的，不是加最大的 
+锁颗粒 
+表锁，时一种开销最小的锁策略
+行锁，是一种开销最大的锁策略 也是支持并发操作的情况
+
+事物处理
+事物用来保证数据的完整性
+原子性 一致性 隔离性 持久性
+
+外键与索引
+索引是对数据表中一列或多列的值进行排序的一种结构
+
+改变存储引擎可以通过创建数据表时来实现
+ENGINE=engine;
+也可以通过ALTER 来修改数据表来实现  	
+
+
+数据查询语言DQL，数据操纵语言DML，
+数据定义语言DDL，数据控制语言DCL。
+
+
+
+1. 数据查询语言DQL
+数据查询语言DQL基本结构是由SELECT子句，FROM子句，WHERE
+子句组成的查询块：
+SELECT <字段名表>
+FROM <表或视图名>
+WHERE <查询条件>
+
+2 .数据操纵语言
+数据操纵语言DML主要有三种形式：
+1) 插入：INSERT
+2) 更新：UPDATE
+3) 删除：DELETE
+
+3. 数据定义语言DDL
+数据定义语言DDL用来创建数据库中的各种对象-----表、视图、
+索引、同义词、聚簇等如：
+CREATE TABLE/VIEW/INDEX/SYN/CLUSTER
+| | | | |
+表 视图 索引 同义词 簇
+
+4. 数据控制语言DCL
+数据控制语言DCL用来授予或回收访问数据库的某种特权，并控制
+数据库操纵事务发生的时间及效果，对数据库实行监视等。如：
+1) GRANT：授权。
+
+
+2) ROLLBACK [WORK] TO [SAVEPOINT]：回退到某一点。
+回滚---ROLLBACK
+回滚命令使数据库状态回到上次最后提交的状态。其格式为：
+SQL>ROLLBACK;
+
+
+3) COMMIT [WORK]：提交。
+在数据库的插入、删除和修改操作时，只有当事务在提交到数据
+库时才算完成。在事务提交前，只有操作数据库的这个人才能有权看
+到所做的事情，别人只有在最后提交完成后才可以看到。
+提交数据有三种类型：显式提交、隐式提交及自动提交。下面分
+别说明这三种类型。
+(1) 显式提交
+用COMMIT命令直接完成的提交为显式提交。其格式为：
+SQL>COMMIT；
+(2) 隐式提交
+用SQL命令间接完成的提交为隐式提交。这些命令是：
+ALTER，AUDIT，COMMENT，CONNECT，CREATE，DISCONNECT，DROP，
+EXIT，GRANT，NOAUDIT，QUIT，REVOKE，RENAME。
+(3) 自动提交
+若把AUTOCOMMIT设置为ON，则在插入、修改、删除语句执行后，
+系统将自动进行提交，这就是自动提交。其格式为：
+SQL>SET AUTOCOMMIT ON；
+
+
+关于索引的讲解
+索引有4种
+（1）UNIQUE唯一索引
+不可以出现相同的值,可以有NULL值
+（2）INDEX普通索引
+允许出现相同的索引内容
+（3）PRIMARY KEY主键索引
+不允许出现相同的值,且不能为NULL值,一个表只能有一个primary_key索引
+（4）fulltext index 全文索引
+ 
+下列的表将不会使用索引： 
+1、如果条件中有or，即使其中有条件带索引也不会使用。 
+2、对于多列索引，不是使用的第一部分，则不会使用索引。 
+3、like查询是以%开头 
+4、如果列类型是字符串，那一定要再条件中将数据使用引号引起来，否则不使用索引。（添加是，字符串必须“） 
+5、如果MySQL估计使用全表扫描比使用索引快，则不使用索引。
+
+(1)越小的数据类型通常更好：越小的数据类型通常在磁盘、内存和CPU缓存中都需要更少的空间，处理起来更快。
+(2)简单的数据类型更好：整型数据比起字符，处理开销更小，因为字符串的比较更复杂。
+在MySQL中，应该用内置的日期和时间数据类型，而不是用字符串来存储时间；以及用整型数据类型存储IP地址。
+(3)尽量避免NULL：应该指定列为NOT NULL，除非你想存储NULL。在MySQL中，
+含有空值的列很难进行查询优化，因为它们使得索引、索引的统计信息以及比较运算更加复杂。
+你应该用0、一个特殊的值或者一个空串代替空值。
+对于任何DBMS，索引都是进行优化的最主要的因素。
+对于少量的数据，没有合适的索引影响不是很大，但是，当随着数据量的增加，性能会急剧下降。
+
+
+关于索引的一篇博客
+http://blog.sina.com.cn/s/blog_610997850100kcry.html

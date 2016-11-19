@@ -1,0 +1,293 @@
+触发器应用场景
+1 复杂的安全确认
+2 数据确认
+3 实现审计功能
+如果利用触发器实现数据库的审计的话，就是基于值的审计
+oracle数据库有5种审计
+4 完成数据的备份和同步
+		
+触发器的类型
+语句级的触发器
+行级的触发器
+
+每当一个特定的数据操作语句(insert update delete)
+ 这指定的表上发出时，oracle自动地执行触发器中定义的语句序列
+			触发器的关键字是trigger
+创建触发器的语法
+CREATE [or REPLACE] TRIGGER 触发器名
+{BEFORE|AFTER}
+{DELETR|INSERT|UPDATE|OF列名}
+ON 表名
+[FOR EACH ROW [WHEN(条件)]]
+PLSQL 块
+
+语句级触发器
+-这指定的操作语句操作之前或之后执行一次，不管这条语句影响了多少行
+行级触发器
+触发器作用的每一条记录都被触发。这行级触发器中使用:old和:new伪记录变量,识别值的状态
+
+语句级触发器:针对的是表
+行级触发器:针对的是行
+
+select sysdate from dual;取系统当前时间
+
+raise抛出错误
+raise_application_error(xxx，'xxx);抛出错误 其中的数字必须为20000-20999的范围内
+host cls 清除当前页面
+
+1 :old和:new 代表同一条记录
+2 表示操作该行之前，这一行的值
+ ：new 表示操作该行之后，这一行的值
+
+数据库触发器是一个与表相关联的。存储的PL/SQL程序
+		
+
+高级查询
+
+分组查询
+多表查询
+子查询
+
+分组函数作用于一组数据，并对一组数据返回一个值
+常用的分组函数
+AVG
+SUM
+MIN
+MAX
+COUNT
+WM_COUCAT 行转列
+concat(A,B)拼接字符串
+set linesize 100 ；//输出一行字符个数为100//设置行的宽度
+col xxx for a60 设置列的宽度
+DISTINCT用于去掉重复的记录
+在分组函数中使用NVL函数
+NVL函数使分组函数无法忽略空值
+
+分组函数
+group by子句的使用
+这select列表中所有未包含这组函数中的列都是应该包含这GROUP BY 子句中
+包含这GROUP BY子句中的列不比包含在SELECT列表中
+
+ed是修改用的很有用的
+
+过滤分组
+having子句
+where与having的区别
+不能这WHERE 子句中使用组函数(注意)
+可以这HAVING子句中使用组函数
+从sql优化的角度上看，尽量使用where
+having 是先分组，再过滤
+where 是先过滤，再分组
+where子句中不能使用分组函数
+
+
+
+在分组查询中使用order by子句
+
+--a命令 append
+
+select deptno,sum(sal) from emp group by deptno
+
+GROUP BY语句的增强
+语法
+group by rollup(a,b)
+等价于
+group by a,b
++
+group by a
++
+group by null
+
+break on deptno skip 2相同的部门号只显示一次，不同部门号换行2行
+set pagesize 30 设置大小 每一页显示30条记录
+
+
+报表
+ttitle col 15 '我的报表' col 35 sql.pno
+col deptno heading 部门号
+col job heading 职位
+col sum(sal) heading 工资总额
+break on deptno skip 1
+sql.pno表示报表的页码
+SQLPLUS 报表功能：
+1. 读取sql脚本 get d:\temp\report.sql
+2. 执行sql脚本 @d:\temp\report.sql
+3. 执行group by 语句的增强 select deptno,job,sum(sal) from emp group by rollup(deptno,job);	
+
+
+笛卡尔集
+笛卡尔乘积通俗的说，就是两个集合中的每一个成员，都与对方集合中的任意一个成员有关联
+在SQL查询中，如果对两张表join查询而没有join条件时，就会产生笛卡尔乘积
+为了避免笛卡尔集，可以在where加入有效的连接条件
+这实际运行环境下，应避免使用笛卡尔全集(有错误的记录)
+
+表x  表y  共同的外键属性  z
+连接条件至少有n-1个
+n代表表的个数
+
+连接条件 x.z=y.z
+等值连接：是一个等号
+例子：
+select e.empno,e.ename,e.sal,d.dname
+from emp e ,dept d
+where e.deptno=d.deptno;	
+
+不等值连接：不是一个等号
+select e.empno,e.ename,e.sal,s.grade
+from emp e,salgrade s
+where e.sal between s.losal and s.hisal;
+
+
+外连接
+核心：通过外连接，把对于连接条件不成立的记录，仍然包含这最后的结果中
+左外链接：当连接条件不成立的时候，等号左边的表仍然被包含
+右外链接：当连接条件不成立的时候，等号右边的表仍然被包含
+
+自连接
+核心通过别名，将同一张表视为多张表
+列：
+select e.ename 员工姓名,d.ename 老板姓名 
+from emp e,emp d
+where e.deptno= d.deptno
+/
+
+
+
+自连接的问题
+不适合操作大表
+
+层次查询
+某些情况下，可以替代自连接
+本质上，是一个单表查询
+
+例:
+select level, empno,ename ,sal 
+from emp 
+connect by prior empno =mgr
+start with mgr is null;
+order by 1;
+
+start with empno=7566 
+connect by 上一层的员工号=老板号  （prior empno代表的是上一层的员工号）
+
+子查询
+
+子查询注意的问题
+子查询语法的小括号
+子查询的书写风格
+可以使用子查询的位置:where,select,having,from
+不可以使用子查询的位置:group by
+强调：from后面的子查询
+主查询与子查询可以不是同一张表
+一般不这子查询中，使用排序；但在Top-N分析问题中，必须对子查询排序
+一般先执行子查询，在执行主查询
+单行子查询只能使用单行操作符
+注意：子查询中是null值的问题
+
+
+使用子查询的位置
+
+where后面的子查询中不能有分组函数
+having后面的子查询中可以有分组函数
+select后面的子查询得到的结果必须是单条记录
+from后面的子查询得到的结果必须是多条记录
+
+ 
+主查询与子查询不是同一张表
+
+示例：查询部门名称是SALES的员工信息 
+子查询:
+select * 
+from emp
+where ddeptno=(select deptno 
+                from dept 
+		where dname='SALES');
+多表查询:				 
+select e.*
+from  emp e,dept d
+where e.deptno=d.deptno and d.dname='SALES';
+
+
+
+--rownum 行号，伪列
+伪列是指oracle上没有这个列，只是为了方便加上的列
+
+
+行号永远按照默认的顺序生成
+行号只能使用<,<= ;不能使用> ,>=
+
+一般先执行子查询，再执行主查询
+；但相关子查询例外
+
+相关子查询的例子
+:
+  select empno,ename.sal ,(select  avg(sal) from emp where deptno=e.deptno) avgsal
+  from emp e
+  where sal >(select  avg(sal) from emp where deptno=e.deptno);
+
+
+单行子查询只能使用单行操作符，多行子查询只能使用多行操作符
+
+
+单行子查询的空值问题
+
+
+Not in语句中不能有null值，否则返回空集，因为expr <> null永远为假。
+not in中不能有空值
+如果有空值可以在后面加上is not null
+
+
+oracle实现分页的方式是使用嵌套子查询的方式
+例：
+select r, empno,ename,sal
+from (select rownum r,empno,ename,sal
+from (select rownum,empno,ename,sal from emp order by sal desc) e1
+where rownum<=8) e2
+where r>=5;
+
+得到执行计划
+explain plan for 
+查看执行计划
+select * from table(dbms_xplan.display);
+
+
+
+例：
+select count(*) Total, sum(decode(to_char(hiredate,'YYYY'),'1980',1,0)) "1980"， 
+ sum(decode(to_char(hiredate,'YYYY'),'1981',1,0)) "1981"，
+ sum(decode(to_char(hiredate,'YYYY'),'1982',1,0)) "1982"，
+ sum(decode(to_char(hiredate,'YYYY'),'1987',1,0)) "1987"
+from emp
+/
+例:
+select
+(select count(*)from emp)，
+(select count(*) from emp where to_char(hiredate,'YYYY')='1980') "1980",
+(select count(*) from emp where to_char(hiredate,'YYYY')='1981') "1981",
+(select count(*) from emp where to_char(hiredate,'YYYY')='1982') "1982",
+(select count(*) from emp where to_char(hiredate,'YYYY')='1987') "1987"
+from dual
+/
+
+
+
+
+DECODE函数相当于一条件语句(IF).它将输入数值与函数中的参数列表相比较，
+根据输入值返回一个对应值。函数的参数列表是由若干数值及其对应结果值组成的若干序偶形式。
+当然，如果未能与任何一个实参序偶匹配成功，则函数也有默认的返回值。
+区别于SQL的其它函数，DECODE函数还能识别和操作空值.
+其具体的语法格式如下：
+ DECODE(input_value,value,result[,value,result…][,default_result]);
+其中：
+input_value 试图处理的数值。DECODE函数将该数值与一系列的序偶相比较，以决定最后的返回结果
+value  是一组成序偶的数值。如果输入数值与之匹配成功，则相应的结果将被返回。
+对应一个空的返回值，
+可以使用关键字NULL于之对应
+result  是一组成序偶的结果值
+default_result 未能与任何一序偶匹配成功时，函数返回的默认值
+下面的例子说明了，如何读取用户CHECKUP表SEAPARK中的BLOOD_TEST_FLAG列下的项目，
+作为DECODE函数的实参支持值。
+SELECT checkup_type,
+ DECODE(blood_test_flag,’Y’,’Yes’,’N’,’No’,NULL,’None’,’Invalid’)
+FROM checkup;
+

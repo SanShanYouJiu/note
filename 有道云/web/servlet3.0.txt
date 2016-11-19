@@ -1,0 +1,37 @@
+@AsyncServlet.java
+public void doGet(HttpServletRequest request, HttpServletResponse response)
+throws ServletException, IOException {
+System.out.println("Servlet执行开始时间："+new Date());
+AsyncContext context = request.getAsyncContext();
+new Thread(new Executor(context)).start();
+System.out.println("Servlet执行结束时间："+new Date());
+}
+
+public class Executor implements Runnable {
+
+private AsyncContext context;
+
+public Executor(AsyncContext context) {
+this.context = context;
+}
+
+public void run() {
+// 执行相关复杂业务
+try {
+Thread.sleep(1000 * 10);
+// context.getRequest();
+// context.getResponse();
+System.out.println("业务执行完成时间：" + new Date());
+} catch (InterruptedException e) {
+e.printStackTrace();
+}
+}
+
+}
+
+@输出结果：
+Start——AsyncFilter
+Servlet执行开始时间：Sat Mar 12 15:40:26 CST 2016
+Servlet执行结束时间：Sat Mar 12 15:40:26 CST 2016
+End——AsyncFilter
+业务执行完成时间：Sat Mar 12 15:40:36 CST 2016

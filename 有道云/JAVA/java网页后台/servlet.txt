@@ -1,0 +1,73 @@
+jsp的前身就是servlet
+ Tomcat Container容器 Engine引擎容器 Host主机容器 Servlet容器 Context容器 
+1 继承HttpServlet
+2 重写doGet()或者doPost()方法
+3 在web.xml中注册Servlet
+Servlet生命周期
+首先要构造方法
+1 初始化阶段，调用inti()方法
+2 响应客户请求阶段，调用service（）方法。
+由service（）方法根据提交方式选择执行doGet()或者doPost方法
+3终止阶段，调用destroy()方法
+
+
+最开始调用初始化方法，然后调用init方法，然后调用service()方法，由service方法根据提交方式选择doGet方法，或者doPost方法 ，结束结束destory（）方法
+
+Servlet的装载三种情况：
+1、自动装载：某些Servlet如果需要在Servlet容器启动时就加载，需要在web.xml下它的<Servlet>标签里中，添加优先级代码：
+<Servlet>
+<load-on-startup>1<load-on-startup>
+</Servlet>
+数字越小表示该servlet的优先级越高，会先于其他自动装载的优先级较低的先装载
+2、Servlet容器启动后，客户首次向某个Servlet发送请求时，Tomcat容器会加载它
+3、当Servlet类文件被更新后，也会重新自动加载
+Servlet是长期驻留在内存里的。某个Servlet一旦被加载，就会长期存在于服务器的内存里，直到服务器关闭
+Servlet被装载后，Servlet容器创建一个Servlet实例并且调用Servlet的init()方法进行初始化。在Servlet的整个生命周期内，
+init()方法只被调用一次
+
+
+1.out -----> response.getwriter()
+2.request -----> service(request)
+3.response -----> service(response)
+4.session ------> request.getsession(）
+5.application ------> getServletContext()
+6.exception -----> Throwable
+7.Page -----> this
+8.PageContext -----> PageContext
+9.Config -----> getServletConfig
+
+其实servlet也是一个页面，获取表单数据与其他jsp页面时一样的，jsp页面时基于servlet上的，基本同样的操作
+
+@Servle——（一）Servlet概述——Servlet的路径跳转
+一、JSP跳转到Servlet
+1、相对路径,如href="servlet/TestServlet"
+***注意：如果写成"/servlet/TestServlet"会报错，因为第一个'/'表示的是【服务器根目录：http://localhost:8080/】
+2、绝对路径，通过内置成员变量path实现，如href="<%=path%>/servlet/TestServlet"。
+***注意：这里的path得到的是项目根目录，如【http://localhost:8080/Servlet002_GetFormDemo】
+<url-pattern>必须以/线开头，这里的斜线表示是项目的根目录
+二、Servlet跳转JSP  这个必须得加相对路径
+1、请求重定向：response.sendRedirect(request.getContextPath()+"/xxx.jsp");这里通过request.getContextPath()方法获得项目根目录，或者通过"../xxx.jsp"取得上层路径得到
+2、服务器内部转发：request.getRequestDispatcher("../xxx.jsp").forward(req,resp);
+***小结：都可以通过../xxx.jsp得到
+转发是服务器行为，在客户浏览器路径栏显示的仍然是其第一次访问的路径，也就是说客户是感觉不到服务器做了转发的。转发行为是浏览器只做了一次访问请求。
+重定向是客户端行为
+重定向，其实是两次request, 在重定向的过程中，传输的信息会被丢失。
+注意项目目录问题
+
+
+MVC模式(Controller,Moderl,View):是软件开发过程中比较流行的设计思想。旨在分离模型、控制、视图。
+是一种分层思想的体现。
+浏览器发出一个请求->被控制器(Servlet)所接收->由servlet去实例化一个模型层(通常是javabean层,由javabean层调用数据库层)的对象->
+由模型层访问数据库层得到的结果可以返回给控制层或者说界面层也可以访问(保存在session中); 控制层获得模型层的反馈结果之后,选择合适的视图给用户呈现 
+最终给用户一个响应
+
+
+Model2 ---MVC架构(JSP+Servlet+JavaBean)：初步体现了MVC的思想
+模型层M:JavaBean； 视图层V:JSP ; 控制层C：Servlet; 数据库层DB
+好处：MVC将程序分为了数据处理、逻辑控制、视图呈现三个层次，使得每个层次内的代码职责更为专一化，从而达到低耦合高内聚的稳定状态，
+每一部分的代码对其他部分的的影响降至最低。另一方面，结合接口的应用，可以更为容易地替换不同层次的具体实现。
+
+
+
+
+instanceof用来判断内存中实际对象A是不是B类型

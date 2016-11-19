@@ -1,0 +1,42 @@
+我们都知道Java语言是完全面向对象的，在java中，所有的对象都是继承于Object类。
+Ojbect类中有两个方法equals、hashCode，这两个方法都是用来比较两个对象是否相等的。
+在未重写equals方法我们是继承了object的equals方法，
+那里的 equals是比较两个对象的内存地址
+，显然我们new了2个对象内存地址肯定不一样
+对于值对象，==比较的是两个对象的值
+对于引用对象，比较的是两个对象的地址
+默认的equals方法同==，一般来说我们的对象都是引用对象，要重写equals方法。
+现在有一个学生对象，有属性学号跟姓名，现在我新建了一个学生对象，又从数据里查出一个学生对象，这两个对象的学号跟姓名都一样，那这两个对象是不是相等呢？一般情况下，除非你有特殊需求要处理，这两个对象是相等的，可如果用==去比较，返回的结果是错误的。
+这时候我们就必须重写equlas方法了。
+如果学号是主键，在equals方法里，我们认为只要学号相同，就可以返回true。
+hashCode方法也是可以用来比较两个对象是否相等的。但是我们很少使用，应该说是很少直接使用。
+hashCode方法返回的是一个int值，可以看做是一个对象的唯一编码，如果两个对象的hashCode值相同，我们应该认为这两个对象是同一个对象。
+02一般如果使用java中的Map对象进行存储时，他会自动调用hashCode方法来比较两个对象是否相等。
+所以如果我们对equals方法进行了重写，建议一定要对hashCode方法重写，以保证相同的对象返回相同的hash值，不同的对象返回不同的hash值。
+如上面的学生例子，如果学号相同，不管姓名相不相同，返回的hash值一定要是一样的，这时我们的hash值只与学号有关。
+public class Test{
+public static void main(String[] args){
+HashMap hm = new HashMap();
+hm.put(new key(1),new value(2));
+if(hm.containsKey(new key(1)))
+System.out.println(hm.get(new key(1)));
+else
+System.out.println("dont have such a key");
+}
+}//02你每次new 一个新对象出来hashcode肯定不一样，所以你拿不到你要的key。
+class key{
+int i ;
+public key(int i){
+this.i = i;
+}
+@Override
+public boolean equals(Object obj){
+if(obj instanceof key){if(((key)obj).i == i)
+return true;
+}
+return false;
+}@Override
+public int hashCode(){return i;}
+}021、重写equals方法时需要重写hashCode方法，主要是针对Map、Set等集合类型的使用；
+a: Map、Set等集合类型存放的对象必须是唯一的；
+b: 集合类判断两个对象是否相等，是先判断equals是否相等，如果equals返回TRUE，还要再判断HashCode返回值是否ture,只有两者都返回ture,才认为该两个对象是相等的。

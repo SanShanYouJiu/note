@@ -1,0 +1,322 @@
+oracle数据库 DOS命令行下弹出文本框命令
+ed  
+
+需要SQL plus
+系统用户
+sys,system
+sysman
+这三个默认密码为 自己设置的 199666
+scott 默认密码为tiger
+connect 用户名/密码 as sysdba ------管理员账户登录 本地不用使用服务名
+connect scott/tiger登陆
+表空间为数据库的实际存储空间
+表空间 
+永久表空间
+临时表空间
+UNDO表空间 保持数据修改的旧址 
+ALTER USER username DEFAULT|TEMPORARY TABLESPACE tablespace_name
+设置用户的默认或临时表空间
+查看表空间：desc dba_tablespaces 
+查看数据字典
+dba_tablespaces,管理员账号数字字典
+user_tablespaces用户数字字典
+show user命令------------能查看用户是否登录
+dba_users数据字典-------------能查看用户的表里的内容
+select username from dba_users;----------能查看所有用户
+查看表空间
+DESC dba_data_files
+创建永久表表空间： create tablespace test_tablespace datafile 'test_datafile.dbf' size = 10m;
+创建临时表空间：create temporary tablespace temptest_tablespace tempfile 'tempfile1.dbf' size 10m;
+查询表空间： select file_name from dba_data_files where tablespace_name = 'TEST_TABLESPACE';
+select file_name from dba_temp_files where tablespace_name = 'TEMPTEST_TABLESPACE';
+设置联机或脱机状态
+ALTER TABLESPACE tablespace_name ONLINE|OFFLINE;
+查看状态
+select status from dba_tablespaces where tablespace_name='TEST1_TABLESPACE';
+查看默认路径
+desc dba_data_files
+设置只读或可读写状态
+ALTER TABLESPACE tablespace_name READ ONLY|READ WRITE
+1、增加数据文件：
+ALTER TABLESPACE tablespace_name
+ADD DATAFILE 'xx.dbf' SIZE xx;
+2、删除数据文件：
+ALTER TABLESPACE tablespace_name
+DROP DATAFILE 'xx.dbf';
+3、不能删除第一个数据文件，否则会把整个表空间全部删除
+删除表空间
+1.只删除表空间
+drop tablespace tablespace_name
+2.删除表空间和数据文件
+drop tablespace tablespace_name including contents
+
+
+
+
+
+
+INSERT INTO table_name
+(column1,column3,...)
+VALUES(value1,value2,...)
+如果是字符串类型添加字符串时要‘’； 
+获取当前用户的时间的变量
+sysdate
+DROP TABLESPACE 
+tablespace_name [INCLUDING CONTENTS]
+字符型
+CHAR(n).NCHAR(n)
+VARCHAR2(n).NVARCHAR2(n)
+大部分情况下建议使用varchar2类型，可以保证更好的兼容性。
+数值型
+NUMBER(p,s)
+p-有效数字
+s_小数点后的位数
+FLOAT(n)
+日期型
+DATE date范围是 公元前4712年1月1日到公元9999年12月31日
+其他类型（存放大对象的数据）
+BLOB 4gb数量的数据（二进制）
+CLOB 4gb数量的数据（字符串） 
+修改字段名：ALTER TABLE userinfo MODIFY ID NUMBER(6);
+删除字段：ALTER TABLE userinfo DROP COLUMN REMARK;
+修改表名：rename userinfo to userinformation;
+删除表基本语法：
+1、TRUNCATE TABLE table_name; 只删除表中的数据，不删除表结构，也叫表截断。
+2、DROP TABLE table_name; 删除表同时也删除表中的数据。
+
+
+
+
+
+
+
+
+
+
+添加数据用的是INSERT语句
+操作实例
+建表时复制：
+create table new_table as select column1,...|* from old_table;
+如果对整个表进行复制：as select * from old_table;
+如果只复制指定的字段：as select column1,... from old_table;
+如果只想复制表结构而不想复制表里面的内容可以加上 where 1=2
+在添加时复制
+INSERT INTO table_new [(column1,...)] SELECT column1,...|*FROM table_old
+
+update语句
+UPDATE table_name SET column1=value1,...
+[WHERE conditions] 
+无条件更新
+有条件的更新
+有条件的删除
+无条件的删除
+DELETE FROM table_name;与TRUNCATE TABLE table_name;区别：
+两者都是用来删除表中的全部数据，但是TRUNCATE 的速度要比DELETE 快，因TRUNCATE 属于数据定义语言中的，所以效率较高
+
+1.truncate和 delete只删除数据不删除表的结构(定义)
+drop语句将删除表的结构被依赖的约束(constrain),触发器(trigger),索引(index); 依赖于该表的存储过程/函数将保留,但是变为invalid状态。
+
+
+
+
+
+
+
+
+
+
+
+约束
+约束的作用 定义规则 确保完整性
+非空约束  not null 有非空约束的必须在插入值的时候插入
+主键约束  primary key 可以表级约束 
+外键约束
+唯一约束
+检查约束
+一、非空约束
+在修改表时添加非空约束：ALTER TABLE table_name MODIFY column_name datatype NOT NULL;
+在修改表时去除非空约束：ALTER TABLE table_name MODIFY column_name datatype NULL;
+二、主键约束
+1、作用：确保表中的每一行数据的唯一性。设置了主键约束的字段，这个字段必须是非空且值是唯一的；一个表中只能设置一个主键约束；一个主键约束可以有多个字段组成，这样的主键叫联合主键或复合主键。
+2、在创建表时设置主键约束(列级)
+语法：CREATE TABLE table_name(
+column_name datatype PRIMARY KEY,...
+);
+3、在创建表时设置主键约束（表级）
+语法：CREATE TABLE table_name(
+column_name datatype,...,
+CONSTRAINT pk_name PRIMARY KEY(column_name1,...));
+4、数据字典：user_constraints
+可以查看某个表中的主键约束信息
+在修改表时添加约束
+ADD CONSTRAINT constraint_name PRIMARY KEY(column_name1,...);
+更改约束的名字
+RENAME CONSTRINT old_name TO new_name
+禁用|启动主键约束
+DISABLE|ENABLE CONSTRAINT constraint_name
+删除主键约束
+DROP CONSTRAINT constraint_name
+DROP PRIMARY KEY[CASCADE]
+三、外键约束
+REFERENCES是设置外键约束的关键字
+FOREIGN是表级使用外键约束的关键字
+约束的名字也是唯一的	
+在创建表时添加外键约束
+列级添加
+ table1从表，table2主表
+CREATE TABLE table1
+(
+column_name datatype REFERENCES table2(column_name),
+...
+);
+表级约束
+CREATE TABLE table1
+(column1_name datatype REFERENCES
+table(column_name),....);主从表相应的字段必须是同一个类型的 插入子表中的值要不就是父表中的值要不就是null值
+在创建表时添加外键约束
+CONSTRAINT constraint_name FOREIGN KEY(column_name)REFERENCES table_name(column_name)[ON DELETE CASCADE]
+[ON DELETE CASCADE]表示级联删除的意思；
+在修改表时添加外键约束
+在修改表时添加外键约束
+语法：ALTER TABLE table_name
+ADD CONSTRAINT constraint_name FOREIGN 
+KEY(column_name) REFERENCES
+table_name2(column_name)[ON DELETE CASCADE]
+禁用|启动外键约束
+DISABLE|ENABLE CONSTRAINT constraint_name
+删除外键约束
+DROP CONSTRAINT constraint_name
+四 唯一约束
+唯一约束的关键字是UNIQUE
+在列级设置唯一约束
+例：
+username varchar2(20) unique ,
+在表级形成唯一约束
+例：
+CONSTRAINT constraint_name unique(column_name)
+
+唯一约束和主键约束的区别 ： 唯一约束允许是空值，主键约束不能是空值
+作用：
+保证字段值的唯一性
+唯一约束和主键约束的区别：
+唯一约束允许有一个空值(比如用户名)
+唯一约束每张表可以有多个
+主键字段值必须是非空的
+主键在每张表中只能有一个
+在修改表时添加唯一约束
+ADD CONSTRAINT constraint_name UNIQUE(column_name);
+禁用|启动唯一约束
+DISABLE|ENABLE CONSTRAINT constraint_name
+删除唯一约束
+DROP CONSTRAINT constraint_name 
+五.检查约束
+检查约束的关键字是CHECK
+检查约束允许用户在表列中应用一系列的自定义的逻辑
+比如工资数必须要大于500，通过指定表达式来检查新插入或更新的字段值，如果布尔表达式结果为False或者是NULL
+，执行操作的SQL语句将会被回滚，Oracle同时会产生一个异常。
+一般情况下使用检查约束检查单个字段，有的时候也会使用检查约束验证多个字段。
+检查约束中可以有多个
+检查约束可以为空值
+在列级形成表级约束
+CREATE TABLE table_name
+(column_name datatype CHECK(expersions),
+....)
+在表级形成约束
+CONSTRAINT constraint_name CHECK(exceptions)
+在修改表时添加约束
+ADD CONTRAINT constraint_name CHECK();
+禁用|启动约束
+DISABLE|ENABLE CONSTRAINT constraint_name
+删除约束
+DROP CONSTRAINT constraint_name
+
+
+只有外键约束 每个表只能有一个，可以由多个字段构成
+外键约束 也是只有这一个涉及俩个表之间的关系
+只有非空约束只能在列级设置，不能在表级约束
+在创建表时设置约束
+在修改表时添加约束
+数字字典（user_constraints）
+RENAME CONSTRAINT old_name TO new_name
+删除非空约束时有点特殊 是设置为NULL
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+查询	
+基本查询语句
+SLEECT [DISTINCT] column_name1,...|*
+FROM table_name[where conditions] distic去除重复的
+
+在SQL*PLUS中设置格式
+COLUMN column_name HEADING new_name
+COLUMN colunm_name FORMAT dataformat 设置字符型数据的格式
+数值类型用‘9’代表一个数字
+ 注：字符型只能设置显示的长度
+在sql*plus中设置格式
+1、作用：配合select语句使用，设置查询结果显示的格式，不会修改数据库表字段。
+2、设置字段显示样式
+语法：COLUMN column_name HEADING new_name;
+注：COLUMN 可以简写成COL
+3、设置字段的格式化样式
+语法：COLUMN column_name FORMAT dataformat;
+注：如果是字符类型的值，只能设置它显示的长度。其中a后面跟数字表示字符串显示长度，例：a10 表示显示10位的长度的字符串；
+数字则用‘9’代表一位，例：999.9 表示整数位为三位，小数位为一位。
+如果设置的长度超出数据最大长度，则用‘#’显示。还可以在数字前面加‘$’,例：$999.9 则查询后显示的结果会在结果前加上'$'符。
+4、清除设置格式
+语法：COLUMN column_name CLEAR;
+
+设置别名
+SELECT column_name AS new_name FROM table_name
+
+
+
+
+
+
+
+
+
+四、运算符和表达式
+1、表达式 = 操作数 + 运算符
+2、oracle中的操作数可以是常量、变量和字段
+3、oracle中的运算符：算数运算符（+ - * /）、比较运算符(> < = >= <= <>)、逻辑运算符(and or not)
+运算符的分级 先执行的是 not.and.or的顺序递减
+比较运算符要高于逻辑运算符
+模糊查询
+关键字LIEK
+通配符的使用(_,%)
+一个_只能代替一个字符
+%可以代替0到多个字符
+范围查询
+关键字 BETWEEN...AND
+IN/NOT IN    IN等同于or运算符的使用
+NOT IN则是将上面的结果相反
+排序关键字为ORDER BY 
+CASE ...WHEN语句的使用
+CASE。。when语句的作用就是根据我们查询语句不同的值，显示不同的结果
+CASE column_name WHEN value1 THEN result1,...
+[ELSE result] END
+例子
+select col_name , case col_name when value1 then result2, when value2 then result2, ... else result end
+as 'XX' from tablename;
+第二种形式：case when ... then ...,else ... end
+select col_name,case when col_name=value1 then result1,...else result end
+
+decode函数的使用
+decode(column_name,value1,result1,....defultvalue)
+decode与前面的case ...when .. then (else) end 类似
+decode(col_name,'条件'，‘结果’);
+
+
+

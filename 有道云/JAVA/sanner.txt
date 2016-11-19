@@ -1,0 +1,10 @@
+elimiter() 
+          返回此 Scanner 当前正在用于匹配分隔符的 Pattern。
+hasNext() 
+          判断扫描器中当前扫描位置后是否还存在下一段。（原APIDoc的注释很扯淡）
+hasNextLine() 
+          如果在此扫描器的输入中存在另一行，则返回 true。
+next() 
+          查找并返回来自此扫描器的下一个完整标记。
+nextLine() 
+          此扫描器执行当前行，并返回跳过的输入信息。

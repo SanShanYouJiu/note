@@ -1,0 +1,91 @@
+--------- 子查询
+
+　　--------- 除非能确保内层select只返回一个行的值，
+
+　　--------- 否则应在外层where子句中用一个in限定符　
+---局部变量
+
+　　declare @id char(10)
+
+　　--set @id = '10010001'
+
+　　select @id = '10010001'
+
+---全局变量
+
+　　---必须以@@开头
+
+　--数据操作
+
+　　SELECT --从数据库表中检索数据行和列
+
+　　INSERT --向数据库表添加新数据行
+
+　　DELETE --从数据库表中删除数据行
+
+　　UPDATE --更新数据库表中的数据
+
+　　--数据定义
+
+　　CREATE TABLE --创建一个数据库表
+
+　　DROP TABLE --从数据库中删除表
+
+　　ALTER TABLE --修改数据库表结构
+
+　　CREATE VIEW --创建一个视图
+
+　　DROP VIEW --从数据库中删除视图
+
+　　CREATE INDEX --为数据库表创建一个索引
+
+　　DROP INDEX --从数据库中删除索引
+
+　　CREATE PROCEDURE --创建一个存储过程
+
+　　DROP PROCEDURE --从数据库中删除存储过程
+
+　　CREATE TRIGGER --创建一个触发器
+
+　　DROP TRIGGER --从数据库中删除触发器
+
+　　CREATE SCHEMA --向数据库添加一个新模式
+
+　　DROP SCHEMA --从数据库中删除一个模式
+
+　　CREATE DOMAIN --创建一个数据值域
+
+　　ALTER DOMAIN --改变域定义
+
+　　DROP DOMAIN --从数据库中删除一个域
+--数据控制
+
+　　GRANT --授予用户访问权限
+
+　　DENY --拒绝用户访问
+
+　　REVOKE --解除用户访问权限
+
+　　--事务控制
+
+　　COMMIT --结束当前事务
+
+　　ROLLBACK --中止当前事务
+
+　　SET TRANSACTION --定义当前事务数据访问特征
+
+　　--程序化SQL
+
+　　DECLARE --为查询设定游标
+
+　　EXPLAN --为查询描述数据访问计划
+
+　　OPEN --检索查询结果打开一个游标
+
+　　FETCH --检索一行查询结果
+
+　　CLOSE --关闭游标
+
+　　PREPARE --为动态执行准备SQL 语句
+
+　　EXECUTE --动态地执行SQL 语句

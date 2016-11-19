@@ -1,0 +1,67 @@
+函数
+
+ROUND(x,m)四舍五入
+CEIL()向上取整
+FLOOR()向下取整
+ABS() 绝对值
+MOD(m,n) 如果m，n有一个值为null值的话，则结果返回null值
+POWER(m,n)表示返回n次幂
+sqrt() 求平方根
+三角函数
+sin(n) Asin(n)
+COS(n),Acos(n)
+TAN(n),ATAN(n)
+UPPER(char)大小写转换：用处注册用户名
+LOWER(char)大小写转换
+INITCAP(char)首字母进行大小写转换
+
+获取字符串函数
+SUBSTR(char,[m,[n]])
+
+length()长度
+CONCAT(char1,char2)字符串连接函数
+TRIM(C2 FROM C1)去除子串函数 去除空格
+LTRIM(C1[,C2])去处子串函数 如果只有一个参数c1的话，就是去除左边的空格 
+RTRIM(C1[,C2])右边去除字符 如果只有一个参数c2的话，就是去除右边的空格
+REPLACE(char,s_string[r_string])省略r_strong用空格替换
+
+
+日期函数
+系统时间
+日期操作
+SYSDATE 默认格式：DD-MON-RR
+ADD_MONTHS(data ,i)
+NEXT_DAY(data,char)下一个‘char’日的日期
+LAST_DAY(data) 显示当月最后一天
+MONTH_BETWEEN(date1,date2)表示倆个日期之间间隔的月份
+EXTRACT(date FROM datetime)表示返回date这datetime中的值
+
+转换函数
+日期类型转换为字符的函数
+字符转换为日期的函数
+数字转换为字符的函数
+字符转换为数字的函数
+TO_CHAR(date[,fmt[,params]])
+ 参数说明
+date:将要转换的日期
+fmt:转换的格式
+params:日期的语言
+YY YYYY YEAR
+MM MONTH
+DD DAT
+HH24 HH12
+MI SS
+TO_DATE(char[,fmt[,params ]])
+params:用于指定日期的语言
+TO_CHAR(number,[,fmt])
+9：显示数字并忽略前面的0
+0：显示数字，位数不足，用0补齐
+.或D：显示小数点
+,或G：显示千位符
+$:美元符号
+s:加正符号（前后都可以）
+TO_NUMBER(char[,fmt])
+fmt是转换的格式，可以省略
+
+
+在查询中使用字符函数
